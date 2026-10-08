@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-LKPD Interaktif: Pemanasan Global (PBL 3 Pertemuan)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+
+        /* Print styling rules */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .shadow-lg, .shadow-md, .shadow-sm {
+                box-shadow: none !important;
+            }
+            .border-slate-200 {
+                border-color: #cbd5e1 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200 no-print shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-200">
+                        <i class="fa-solid font-bold text-lg fa-earth-americas"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-900 leading-tight">E-LKPD Pemanasan Global</h1>
+                        <p class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">Model Problem-Based Learning (PBL)</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs (Pertemuan 1, 2, 3 & Identity) -->
+                <nav class="hidden md:flex items-center space-x-1 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                    <button onclick="switchTab('tab-identity')" id="nav-tab-identity" class="nav-btn px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-emerald-700">
+                        <i class="fa-solid fa-users mr-1.5"></i> Identitas
+                    </button>
+                    <button onclick="switchTab('tab-p1')" id="nav-tab-p1" class="nav-btn px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-emerald-700 bg-white shadow-sm">
+                        <i class="fa-solid fa-temperature-arrow-up mr-1.5"></i> Pertemuan 1
+                    </button>
+                    <button onclick="switchTab('tab-p2')" id="nav-tab-p2" class="nav-btn px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-emerald-700">
+                        <i class="fa-solid fa-cloud-showers-heavy mr-1.5"></i> Pertemuan 2
+                    </button>
+                    <button onclick="switchTab('tab-p3')" id="nav-tab-p3" class="nav-btn px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-emerald-700">
+                        <i class="fa-solid fa-seedling mr-1.5"></i> Pertemuan 3
+                    </button>
+                    <button onclick="switchTab('tab-rubrik')" id="nav-tab-rubrik" class="nav-btn px-4 py-1.5 text-xs font-semibold rounded-lg transition-all text-slate-600 hover:text-emerald-700">
+                        <i class="fa-solid fa-clipboard-check mr-1.5"></i> Evaluasi
+                    </button>
+                </nav>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center gap-2">
+                    <button onclick="saveAllProgress()" class="px-3 py-2 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition border border-emerald-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-floppy-disk"></i> <span class="hidden sm:inline">Simpan</span>
+                    </button>
+                    <button onclick="window.print()" class="px-3 py-2 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg transition shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> <span class="hidden sm:inline">Cetak / PDF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Bar -->
+        <div class="md:hidden flex overflow-x-auto px-4 py-2 bg-slate-100 border-t border-slate-200 gap-2 no-scrollbar">
+            <button onclick="switchTab('tab-identity')" class="nav-btn px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap bg-white border">Identitas</button>
+            <button onclick="switchTab('tab-p1')" class="nav-btn px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap bg-white border">Pertemuan 1</button>
+            <button onclick="switchTab('tab-p2')" class="nav-btn px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap bg-white border">Pertemuan 2</button>
+            <button onclick="switchTab('tab-p3')" class="nav-btn px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap bg-white border">Pertemuan 3</button>
+            <button onclick="switchTab('tab-rubrik')" class="nav-btn px-3 py-1 text-xs font-semibold rounded-lg whitespace-nowrap bg-white border">Evaluasi</button>
+        </div>
+
+        <!-- Overall Progress Bar -->
+        <div class="w-full bg-slate-200 h-1">
+            <div id="overall-progress" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-1 w-0 transition-all duration-500"></div>
+        </div>
+    </header>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-700 no-print">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-msg" class="text-xs font-medium">Progress tersimpan secara otomatis!</span>
+    </div>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+
+        <!-- HEADER LKPD FOR PRINT & GROUP IDENTITY -->
+        <div id="tab-identity" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 pb-4 mb-6 gap-4">
+                <div>
+                    <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-800 font-bold text-xs rounded-full mb-2">Mata Pelajaran: IPA / Fisika</span>
+                    <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">LEMBAR KERJA PESERTA DIDIK (LKPD)</h1>
+                    <p class="text-slate-600 font-medium text-sm">Topik Utama: Pemanasan Global & Perubahan Iklim (3 Pertemuan)</p>
+                </div>
+                <div class="text-right sm:text-right text-xs text-slate-500 space-y-1">
+                    <p><span class="font-semibold text-slate-700">Kelas / Semester:</span> X / Genap</p>
+                    <p><span class="font-semibold text-slate-700">Model Pembelajaran:</span> Problem-Based Learning (PBL)</p>
+                    <p><span class="font-semibold text-slate-700">Alokasi Waktu:</span> 3 x 2 JP (6 x 45 Menit)</p>
+                </div>
+            </div>
+
+            <!-- Group Identity Form -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-200">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Nama Kelompok</label>
+                        <input type="text" id="identitas-kelompok" placeholder="Contoh: Kelompok 1 (Eco-Warriors)" class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" oninput="saveAllProgress()">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Kelas</label>
+                            <input type="text" id="identitas-kelas" placeholder="X-IPA 1" class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" oninput="saveAllProgress()">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1">Tanggal</label>
+                            <input type="date" id="identitas-tanggal" class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" onchange="saveAllProgress()">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-600">Anggota Kelompok</label>
+                        <button onclick="addMemberInput()" class="no-print text-xs text-emerald-600 font-semibold hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-plus-circle"></i> Tambah Anggota
+                        </button>
+                    </div>
+                    <div id="members-list" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                        <!-- Dynamic member fields initialized via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 1: PERTEMUAN 1 -->
+        <!-- ========================================================================= -->
+        <section id="tab-p1" class="tab-content space-y-8">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-emerald-800 to-teal-700 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="bg-emerald-500/30 backdrop-blur-md text-emerald-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pertemuan 1</span>
+                    <h2 class="text-2xl font-bold mt-2">Konsepsi Efek Rumah Kaca & Pemanasan Global</h2>
+                    <p class="text-emerald-100 text-sm mt-1 max-w-2xl">Menganalisis mekanisme terjadinya Efek Rumah Kaca (ERK), mengidentifikasi Gas Rumah Kaca (GRK), dan memahami konsep dasar Pemanasan Global.</p>
+                </div>
+                <i class="fa-solid fa-sun absolute -right-6 -bottom-6 text-9xl text-white/10"></i>
+            </div>
+
+            <!-- Sintaks PBL 1: Orientasi Masalah -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">F1</span>
+                    <h3 class="text-lg font-bold text-slate-800">Fase 1: Orientasi Peserta Didik pada Masalah</h3>
+                </div>
+
+                <!-- Wacana Fenomena -->
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl space-y-2">
+                    <h4 class="font-bold text-amber-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-car-side"></i> Fenomena: Analogi Mobil Terparkir
+                    </h4>
+                    <p class="text-sm text-amber-800 leading-relaxed">
+                        Pernahkah Anda merasakan berada di dalam mobil yang terparkir di bawah terik matahari dengan seluruh jendela tertutup rapat? Udara di dalam mobil terasa jauh lebih panas dan hangat (mencapai lebih dari 15°C di atas suhu luar) dibandingkan udara di luar mobil. Fenomena serupa terjadi pada planet Bumi kita. Atmosfer menahan sebagian radiasi panas matahari agar Bumi tetap hangat (rata-rata 15°C) dan layak dihuni. Namun, mengapa akhir-akhir ini suhu udara terasa jauh lebih menyengat?
+                    </p>
+                </div>
+
+                <!-- Interactive Simulation Suite (PhET Embed & Canvas Lab) -->
+                <div class="bg-slate-900 text-white p-5 rounded-2xl space-y-4 shadow-lg border border-slate-800">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-3 gap-3">
+                        <div>
+                            <span class="bg-emerald-500/20 text-emerald-400 text-[11px] font-bold px-2.5 py-0.5 rounded border border-emerald-500/30 uppercase tracking-wider">Laboratorium Virtual Interaktif</span>
+                            <h4 class="text-base font-bold text-white flex items-center gap-2 mt-1">
+                                <i class="fa-solid fa-flask text-emerald-400"></i> Simulasi Efek Rumah Kaca & Radiasi Matahari
+                            </h4>
+                        </div>
+                        
+                        <!-- Toggle Simulation View Buttons -->
+                        <div class="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 text-xs font-semibold">
+                            <button onclick="toggleSimMode('canvas')" id="btn-sim-canvas" class="px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition shadow-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-atom"></i> Simulasi Partikel
+                            </button>
+                            <button onclick="toggleSimMode('phet')" id="btn-sim-phet" class="px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-up-right-from-square"></i> Simulasi PhET Interactive
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mode 1: Custom Particle Canvas Simulation -->
+                    <div id="sim-container-canvas" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-8 space-y-2">
+                            <div class="flex justify-between items-center text-xs text-slate-300">
+                                <span>Visualisasi Partikel Sinar Tampak (Kuning) & Inframerah (Merah)</span>
+                                <span class="text-emerald-400 font-medium" id="simStatusTag">Simulasi Berjalan</span>
+                            </div>
+                            <div class="relative">
+                                <canvas id="greenhouseCanvas" class="w-full h-64 bg-slate-950 rounded-xl border border-slate-800 shadow-inner"></canvas>
+                                
+                                <!-- On-canvas Overlay Indicators -->
+                                <div class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200 space-y-0.5">
+                                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Sinar Tampak (Gelombang Pendek)</div>
+                                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Panas Terpancar / Inframerah</div>
+                                    <div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> Gas Rumah Kaca (CO₂, CH₄)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulation Controls -->
+                        <div class="lg:col-span-4 flex flex-col justify-between bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-4">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-300 block mb-1">Konsentrasi Gas Rumah Kaca (GRK):</label>
+                                    <input type="range" id="grkSlider" min="0" max="100" value="35" class="w-full accent-emerald-500 cursor-pointer" oninput="updateSim()">
+                                    <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                                        <span>Atmosfer Alami</span>
+                                        <span id="grkVal" class="font-bold text-emerald-400">35%</span>
+                                        <span>Tinggi (Tercemar)</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="text-xs font-semibold text-slate-300 block mb-1">Intensitas Sinar Matahari:</label>
+                                    <input type="range" id="sunSlider" min="20" max="100" value="70" class="w-full accent-amber-500 cursor-pointer" oninput="updateSim()">
+                                    <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                                        <span>Redup</span>
+                                        <span id="sunVal" class="font-bold text-amber-400">70%</span>
+                                        <span>Sangat Terik</span>
+                                    </div>
+                                </div>
+
+                                <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-700 text-xs space-y-1">
+                                    <p class="text-slate-400 font-medium">Estimasi Suhu Rata-rata Permukaan:</p>
+                                    <p id="tempDisplay" class="text-3xl font-extrabold text-amber-400">15.4 °C</p>
+                                    <p id="tempStatus" class="text-emerald-400 text-[11px]">Kondisi Ideal Suhu Lapisan Atmosfer</p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <button onclick="toggleSimPlay()" id="btnPlaySim" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-pause"></i> <span>Jeda</span>
+                                </button>
+                                <button onclick="resetSimControls()" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold transition">
+                                    <i class="fa-solid fa-rotate"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mode 2: PhET Colorado Simulation Embed -->
+                    <div id="sim-container-phet" class="hidden space-y-2">
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                            <iframe src="https://phet.colorado.edu/sims/html/greenhouse-effect/latest/greenhouse-effect_all.html" width="100%" height="480" allowfullscreen class="rounded-lg border-0 w-full"></iframe>
+                        </div>
+                        <p class="text-[11px] text-slate-400 text-center">
+                            <i class="fa-solid fa-circle-info text-emerald-400 mr-1"></i>
+                            Simulasi interaktif langsung didukung oleh <strong>PhET Interactive Simulations - University of Colorado Boulder</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Pertanyaan Pemantik -->
+                <div class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">
+                            1. Mengapa suhu di dalam mobil yang tertutup rapat bisa terasa jauh lebih panas dibanding lingkungan luar?
+                        </label>
+                        <textarea id="p1-q1" rows="3" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Tuliskan analisis kelompok Anda..." oninput="saveAllProgress()"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">
+                            2. Hipotesis Kelompok: Bagaimana mekanisme atmosfer Bumi bekerja mirip dengan analogi kaca mobil tersebut?
+                        </label>
+                        <textarea id="p1-q2" rows="3" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Tuliskan hipotesis awal kelompok..." oninput="saveAllProgress()"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sintaks PBL 2 & 3: Penyelidikan Praktikum -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">F2-3</span>
+                        <h3 class="text-lg font-bold text-slate-800">Fase 2 & 3: Mengorganisasi & Membimbing Penyelidikan</h3>
+                    </div>
+                    <span class="text-xs bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md font-semibold border border-emerald-200">Eksperimen Toples Kaca</span>
+                </div>
+
+                <!-- Petunjuk & Bahan -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <h5 class="font-bold text-slate-700 mb-1"><i class="fa-solid fa-box-open text-emerald-600 mr-1"></i> Alat & Bahan</h5>
+                        <ul class="list-disc list-inside text-slate-600 space-y-1">
+                            <li>2 buah termometer</li>
+                            <li>2 buah toples kaca bening</li>
+                            <li>Plastik transparan & karet</li>
+                            <li>Stopwatch / Timer</li>
+                            <li>Lampu Pijar / Matahari</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 md:col-span-2">
+                        <h5 class="font-bold text-slate-700 mb-1"><i class="fa-solid fa-list-check text-emerald-600 mr-1"></i> Langkah Kerja Percobaan</h5>
+                        <ol class="list-decimal list-inside text-slate-600 space-y-1 leading-relaxed">
+                            <li>Siapkan <strong>Toples A</strong> (tanpa penutup) dan <strong>Toples B</strong> (ditutup rapat plastik transparan).</li>
+                            <li>Letakkan termometer pada masing-masing toples, catat suhu awal (T₀).</li>
+                            <li>Paparkan kedua toples di bawah sinar matahari / lampu pijar secara bersamaan.</li>
+                            <li>Catat perubahan suhu setiap 3 menit selama 15 menit pada tabel di bawah ini.</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Table Data Entry & Dynamic Live Chart -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <!-- Data Input Table -->
+                    <div class="lg:col-span-6 space-y-2">
+                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-table text-emerald-600"></i> Tabel Pengamatan Suhu (°C)
+                        </h4>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-2.5 text-center">Waktu (Menit)</th>
+                                        <th class="p-2.5 text-center">Toples A (Terbuka)</th>
+                                        <th class="p-2.5 text-center">Toples B (Tertutup)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white">
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-2 font-semibold text-center bg-slate-50">0 (Awal)</td>
+                                        <td class="p-1.5"><input type="number" id="tA-0" value="28" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                        <td class="p-1.5"><input type="number" id="tB-0" value="28" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-2 font-semibold text-center bg-slate-50">3</td>
+                                        <td class="p-1.5"><input type="number" id="tA-3" value="29" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                        <td class="p-1.5"><input type="number" id="tB-3" value="31" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-2 font-semibold text-center bg-slate-50">6</td>
+                                        <td class="p-1.5"><input type="number" id="tA-6" value="29.5" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                        <td class="p-1.5"><input type="number" id="tB-6" value="33" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-2 font-semibold text-center bg-slate-50">9</td>
+                                        <td class="p-1.5"><input type="number" id="tA-9" value="30" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                        <td class="p-1.5"><input type="number" id="tB-9" value="35" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-2 font-semibold text-center bg-slate-50">12</td>
+                                        <td class="p-1.5"><input type="number" id="tA-12" value="30.5" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                        <td class="p-1.5"><input type="number" id="tB-12" value="36.5" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-2 font-semibold text-center bg-slate-50">15</td>
+                                        <td class="p-1.5"><input type="number" id="tA-15" value="31" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                        <td class="p-1.5"><input type="number" id="tB-15" value="38" class="w-full text-center p-1.5 border rounded" oninput="renderP1Chart(); saveAllProgress()"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Chart Canvas -->
+                    <div class="lg:col-span-6 space-y-2">
+                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-emerald-600"></i> Grafik Kenaikan Suhu Toples A vs B
+                        </h4>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <canvas id="p1Chart" class="w-full h-56"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sintaks PBL 4 & 5: Analisis & Kesimpulan -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+                <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">F4-5</span>
+                    <h3 class="text-lg font-bold text-slate-800">Fase 4 & 5: Mengembangkan Karya, Analisis & Evaluasi</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">
+                            1. Berdasarkan grafik di atas, toples manakah yang mengalami kenaikan suhu lebih cepat dan tinggi? Mengapa hal tersebut terjadi?
+                        </label>
+                        <textarea id="p1-q3" rows="2" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Jelaskan hubungan keterperangkapan panas..." oninput="saveAllProgress()"></textarea>
+                    </div>
+
+                    <!-- Analogi Matching Section -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="text-sm font-bold text-slate-800">2. Analogi Komponen Percobaan dengan Komponen Bumi:</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="font-semibold text-slate-700 block mb-1">Plastik Transparan Mewakili:</label>
+                                <input type="text" id="p1-analogi-1" placeholder="Atmosfer Bumi" class="w-full p-2 bg-white border border-slate-300 rounded-lg" oninput="saveAllProgress()">
+                            </div>
+                            <div>
+                                <label class="font-semibold text-slate-700 block mb-1">Udara Terperangkap Mewakili:</label>
+                                <input type="text" id="p1-analogi-2" placeholder="Gas Rumah Kaca (GRK)" class="w-full p-2 bg-white border border-slate-300 rounded-lg" oninput="saveAllProgress()">
+                            </div>
+                            <div>
+                                <label class="font-semibold text-slate-700 block mb-1">Lampu / Sinar Matahari Mewakili:</label>
+                                <input type="text" id="p1-analogi-3" placeholder="Radiasi Gelombang Matahari" class="w-full p-2 bg-white border border-slate-300 rounded-lg" oninput="saveAllProgress()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gas Rumah Kaca Identification Table -->
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 mb-2">3. Identifikasi Jenis-Jenis Gas Rumah Kaca (GRK) Utama & Sumbernya:</h4>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 text-slate-700 font-bold uppercase">
+                                    <tr>
+                                        <th class="p-2.5">No</th>
+                                        <th class="p-2.5">Gas Rumah Kaca (Rumus Kimia)</th>
+                                        <th class="p-2.5">Sumber Utama / Aktivitas Penghasil</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white">
+                                    <tr>
+                                        <td class="p-2.5 font-bold">1</td>
+                                        <td class="p-2.5 font-semibold text-emerald-700">Karbon Dioksida (CO₂)</td>
+                                        <td class="p-2"><input type="text" id="grk-source-1" placeholder="Pembakaran bahan bakar fosil (PLTU, kendaraan), deforestasi" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">2</td>
+                                        <td class="p-2.5 font-semibold text-emerald-700">Metana (CH₄)</td>
+                                        <td class="p-2"><input type="text" id="grk-source-2" placeholder="Kotoran ternak (peternakan), tumpukan sampah organik, sawah padi" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">3</td>
+                                        <td class="p-2.5 font-semibold text-emerald-700">Nitrogen Oksida (N₂O)</td>
+                                        <td class="p-2"><input type="text" id="grk-source-3" placeholder="Penggunaan pupuk sintetis kimia, limbah industri" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold">4</td>
+                                        <td class="p-2.5 font-semibold text-emerald-700">Klorofluorokarbon (CFC)</td>
+                                        <td class="p-2"><input type="text" id="grk-source-4" placeholder="Pendingin ruangan (AC), kulkas lama, spray aerosol" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Kesimpulan Pertemuan 1 -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-800 mb-1">
+                            <i class="fa-solid fa-flag-checkered text-emerald-600 mr-1"></i> Kesimpulan Pembelajaran Pertemuan 1:
+                        </label>
+                        <textarea id="p1-kesimpulan" rows="3" class="w-full p-3 text-sm bg-emerald-50/50 border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Rumuskan kesimpulan definisi Efek Rumah Kaca dan Pemanasan Global..." oninput="saveAllProgress()"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 2: PERTEMUAN 2 -->
+        <!-- ========================================================================= -->
+        <section id="tab-p2" class="tab-content hidden space-y-8">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-teal-800 to-cyan-700 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="bg-teal-500/30 backdrop-blur-md text-teal-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pertemuan 2</span>
+                    <h2 class="text-2xl font-bold mt-2">Penyebab Utama & Dampak Pemanasan Global</h2>
+                    <p class="text-teal-100 text-sm mt-1 max-w-2xl">Menganalisis berbagai aktivitas antropogenik (manusia) yang memicu pemanasan global serta dampaknya terhadap iklim, ekosistem, dan keanekaragaman hayati.</p>
+                </div>
+                <i class="fa-solid fa-industry absolute -right-6 -bottom-6 text-9xl text-white/10"></i>
+            </div>
+
+            <!-- Fase 1: Orientasi Masalah -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm">F1</span>
+                    <h3 class="text-lg font-bold text-slate-800">Fase 1: Orientasi Peserta Didik pada Masalah</h3>
+                </div>
+
+                <div class="bg-slate-900 text-slate-100 p-5 rounded-2xl space-y-4">
+                    <div class="flex flex-col md:flex-row gap-6 items-center">
+                        <div class="space-y-2 flex-1">
+                            <span class="bg-red-500/20 text-red-400 text-xs font-bold px-2 py-0.5 rounded border border-red-500/30">Studi Kasus BMKG & IPCC</span>
+                            <h4 class="text-lg font-bold text-white">Laju Kenaikan Suhu dan Mencairnya Es Kutub</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Laporan BMKG dan IPCC mencatat bahwa dekade terakhir merupakan periode terpanas sepanjang peradaban manusia. Pencairan es di Kutub Utara dan Selatan melaju hingga 3 kali lebih cepat dibanding era 1990-an. Kenaikan permukaan air laut mengancam tenggelamnya pulau-pulau kecil di Indonesia, sementara fenomena ekstrem El Niño dan La Niña memicu kekeringan hebat serta banjir bandang.
+                            </p>
+                        </div>
+                        <!-- CO2 Anomaly Chart -->
+                        <div class="w-full md:w-80 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                            <h5 class="text-[11px] font-bold text-emerald-400 text-center mb-1">Tren Konsentrasi CO₂ vs Suhu Global (1880-2025)</h5>
+                            <canvas id="co2Chart" class="w-full h-36"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">
+                            1. Apa hubungan antara lonjakan emisi pembakaran bahan bakar fosil industri dengan peningkatan frekuensi cuaca ekstrem saat ini?
+                        </label>
+                        <textarea id="p2-q1" rows="3" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Tuliskan hasil analisis kelompok..." oninput="saveAllProgress()"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-800 mb-1">
+                            2. Bagaimana fenomena mencairnya es di kutub memengaruhi secara langsung kehidupan masyarakat pesisir di pulau-pulau Indonesia?
+                        </label>
+                        <textarea id="p2-q2" rows="3" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Tuliskan tanggapan Anda..." oninput="saveAllProgress()"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 2 & 3: Penyelidikan Peta Konsep Penyebab & Dampak -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm">F2-3</span>
+                    <h3 class="text-lg font-bold text-slate-800">Fase 2 & 3: Investigasi Penyebab per Sektor</h3>
+                </div>
+
+                <!-- Structured Cause Mapping -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-amber-50/70 border border-amber-200 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2 text-amber-800 font-bold text-sm">
+                            <i class="fa-solid fa-bolt"></i> Sektor Energi & Transportasi
+                        </div>
+                        <p class="text-xs text-slate-600">Sebutkan 2 aktivitas utama:</p>
+                        <input type="text" id="p2-cause-1" placeholder="1. Pembangkit Listrik Batubara (PLTU)" class="w-full p-2 text-xs bg-white border border-amber-300 rounded-lg" oninput="saveAllProgress()">
+                        <input type="text" id="p2-cause-2" placeholder="2. Penggunaan kendaraan bermotor bermesin bensin" class="w-full p-2 text-xs bg-white border border-amber-300 rounded-lg" oninput="saveAllProgress()">
+                    </div>
+
+                    <div class="bg-emerald-50/70 border border-emerald-200 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+                            <i class="fa-solid fa-tree"></i> Sektor Deforestasi & Lahan
+                        </div>
+                        <p class="text-xs text-slate-600">Sebutkan 2 aktivitas utama:</p>
+                        <input type="text" id="p2-cause-3" placeholder="1. Penebangan liar dan pembakaran hutan" class="w-full p-2 text-xs bg-white border border-emerald-300 rounded-lg" oninput="saveAllProgress()">
+                        <input type="text" id="p2-cause-4" placeholder="2. Alih fungsi hutan menjadi perkebunan monokultur" class="w-full p-2 text-xs bg-white border border-emerald-300 rounded-lg" oninput="saveAllProgress()">
+                    </div>
+
+                    <div class="bg-indigo-50/70 border border-indigo-200 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2 text-indigo-800 font-bold text-sm">
+                            <i class="fa-solid fa-cow"></i> Sektor Peternakan & Sampah
+                        </div>
+                        <p class="text-xs text-slate-600">Sebutkan 2 aktivitas utama:</p>
+                        <input type="text" id="p2-cause-5" placeholder="1. Gas metana dari fermentasi pencernaan sapi" class="w-full p-2 text-xs bg-white border border-indigo-300 rounded-lg" oninput="saveAllProgress()">
+                        <input type="text" id="p2-cause-6" placeholder="2. Penumpukan limbah organik busuk di TPA" class="w-full p-2 text-xs bg-white border border-indigo-300 rounded-lg" oninput="saveAllProgress()">
+                    </div>
+                </div>
+
+                <!-- Matrix Impact Table -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-volcano text-teal-600"></i> Matriks Analisis Dampak Multisektoral
+                    </h4>
+                    <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 text-slate-700 font-bold uppercase">
+                                <tr>
+                                    <th class="p-3 w-1/4">Bidang Dampak</th>
+                                    <th class="p-3 w-1/3">Dampak Nyata yang Terjadi</th>
+                                    <th class="p-3">Mekanisme / Penjelasan Kejadian</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                                <tr>
+                                    <td class="p-3 font-semibold text-slate-800 bg-slate-50">1. Iklim & Cuaca</td>
+                                    <td class="p-2"><input type="text" id="dampak-1-1" placeholder="Cuaca ekstrem & pergeseran musim" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    <td class="p-2"><input type="text" id="dampak-1-2" placeholder="Ketidakstabilan tekanan udara akibat pemanasan atmosfer" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-slate-800 bg-slate-50">2. Ekosistem Laut</td>
+                                    <td class="p-2"><input type="text" id="dampak-2-1" placeholder="Pemutihan terumbu karang (Coral Bleaching)" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    <td class="p-2"><input type="text" id="dampak-2-2" placeholder="Suhu laut naik menyebabkan terumbu karang mengeluarkan alga simbiotiknya" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-slate-800 bg-slate-50">3. Wilayah Pesisir</td>
+                                    <td class="p-2"><input type="text" id="dampak-3-1" placeholder="Abrasi pantai & banjir rob" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    <td class="p-2"><input type="text" id="dampak-3-2" placeholder="Pencairan gletser dan pemuaian termal air laut" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-slate-800 bg-slate-50">4. Pertanian & Pangan</td>
+                                    <td class="p-2"><input type="text" id="dampak-4-1" placeholder="Gagal panen & krisis pangan" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    <td class="p-2"><input type="text" id="dampak-4-2" placeholder="Kekeringan panjang mengganggu pola tanam petani" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-semibold text-slate-800 bg-slate-50">5. Kesehatan Manusia</td>
+                                    <td class="p-2"><input type="text" id="dampak-5-1" placeholder="Lonjakan penyakit DBD & ISPA" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                    <td class="p-2"><input type="text" id="dampak-5-2" placeholder="Suhu hangat mempercepat perkembangbiakan nyamuk Aedes aegypti" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fase 4 & 5: Mind Map & Evaluasi Kritis -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+                <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-sm">F4-5</span>
+                    <h3 class="text-lg font-bold text-slate-800">Fase 4 & 5: Penyajian Mind Map & Analisis Kritis</h3>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">
+                        1. Sektor manakah yang memberikan kontribusi emisi karbon terbesar di daerah sekitar tempat tinggal / sekolah Anda? Jelaskan alasannya!
+                    </label>
+                    <textarea id="p2-eval-1" rows="3" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Tuliskan analisis lingkungan lokal Anda..." oninput="saveAllProgress()"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-800 mb-1">
+                        2. Mengapa penebangan hutan (deforestasi) memperparah konsentrasi gas CO₂ di atmosfer secara ganda?
+                    </label>
+                    <textarea id="p2-eval-2" rows="3" class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Jelaskan dari sudut pandang fungsi pohon sebagai penyerap karbon (carbon sink)..." oninput="saveAllProgress()"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 3: PERTEMUAN 3 -->
+        <!-- ========================================================================= -->
+        <section id="tab-p3" class="tab-content hidden space-y-8">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-emerald-900 to-green-700 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="bg-emerald-500/30 backdrop-blur-md text-emerald-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Pertemuan 3</span>
+                    <h2 class="text-2xl font-bold mt-2">Solusi, Upaya Mitigasi & Proyek Aksi Nyata</h2>
+                    <p class="text-emerald-100 text-sm mt-1 max-w-2xl">Merumuskan langkah konkret pengurangan jejak karbon, memahami kesepakatan iklim internasional, dan merancang proyek kampanye hijau sekolah.</p>
+                </div>
+                <i class="fa-solid fa-solar-panel absolute -right-6 -bottom-6 text-9xl text-white/10"></i>
+            </div>
+
+            <!-- Interactive Carbon Footprint Calculator -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm"><i class="fa-solid fa-calculator"></i></span>
+                        <h3 class="text-lg font-bold text-slate-800">Kalkulator Jejak Karbon Harian Siswa</h3>
+                    </div>
+                    <span class="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-bold">Fitur Interaktif</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-emerald-50/50 p-5 rounded-2xl border border-emerald-200">
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-900">1. Input Kebiasaan Harian Anda:</h4>
+                        
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 flex justify-between mb-1">
+                                <span>Transportasi ke sekolah:</span>
+                                <span id="transValText" class="font-bold text-emerald-700">Motor (BBM)</span>
+                            </label>
+                            <select id="calcTrans" class="w-full p-2 text-xs bg-white border border-slate-300 rounded-lg" onchange="calculateCarbon()">
+                                <option value="3.5">Sepeda Motor BBM (Jarak >3km) - High</option>
+                                <option value="1.5">Mobil Bersama / Angkot - Medium</option>
+                                <option value="0.2">Jalan Kaki / Bersepeda / Jalan - Very Low</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 flex justify-between mb-1">
+                                <span>Durasi Pemakaian AC/Kipas di Rumah:</span>
+                                <span id="acValText" class="font-bold text-emerald-700">8 Jam/hari</span>
+                            </label>
+                            <input type="range" id="calcAc" min="0" max="24" value="8" class="w-full accent-emerald-600" oninput="calculateCarbon()">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-700 flex justify-between mb-1">
+                                <span>Penggunaan Plastik Sekali Pakai:</span>
+                                <span id="plasticValText" class="font-bold text-emerald-700">3 Kantong/hari</span>
+                            </label>
+                            <input type="range" id="calcPlastic" min="0" max="10" value="3" class="w-full accent-emerald-600" oninput="calculateCarbon()">
+                        </div>
+                    </div>
+
+                    <!-- Calculator Output -->
+                    <div class="flex flex-col justify-center items-center bg-white p-6 rounded-xl border border-emerald-200 text-center space-y-3 shadow-sm">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Estimasi Jejak Karbon Harian Anda</span>
+                        <div class="text-4xl font-extrabold text-emerald-600" id="carbonScoreDisplay">4.8 <span class="text-base font-normal text-slate-500">kg CO₂e/hari</span></div>
+                        <p id="carbonStatusText" class="text-xs text-amber-600 font-semibold bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                            Di Atas Rata-rata Ideal (Perlu Pengurangan!)
+                        </p>
+                        <p class="text-[11px] text-slate-500">Target Paris Agreement: Mendorong gaya hidup ramah lingkungan &lt; 2,0 kg CO₂e/hari</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabel Evaluasi & Solusi -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-leaf text-emerald-600"></i> Rencana Aksi Nyata Pengurangan Jejak Karbon
+                </h3>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 text-slate-700 font-bold uppercase">
+                            <tr>
+                                <th class="p-3">Aktivitas Tinggi Emisi</th>
+                                <th class="p-3">Solusi & Aksi Nyata Mitigasi</th>
+                                <th class="p-3">Target Pengurangan Karbon</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 bg-white">
+                            <tr>
+                                <td class="p-3 font-semibold">1. Penggunaan motor pribadi untuk jarak dekat</td>
+                                <td class="p-2"><input type="text" id="sol-1-1" placeholder="Bersepeda, jalan kaki, atau nebeng bersama teman" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                <td class="p-2"><input type="text" id="sol-1-2" placeholder="Menurunkan emisi BBM hingga 50%" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">2. Pemakaian AC dan listrik berlebihan di kelas</td>
+                                <td class="p-2"><input type="text" id="sol-2-1" placeholder="Mematikan lampu/AC saat ruangan kosong & optimalkan ventilasi" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                <td class="p-2"><input type="text" id="sol-2-2" placeholder="Hemat energi listrik hingga 20%" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">3. Pembelian botol & kantong plastik kemasan</td>
+                                <td class="p-2"><input type="text" id="sol-3-1" placeholder="Membawa tumbler minum dan tas belanja kain (reusable)" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                <td class="p-2"><input type="text" id="sol-3-2" placeholder="Zero-plastic waste di lingkungan kantin" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-semibold">4. Sisa makanan terbuang di kantin</td>
+                                <td class="p-2"><input type="text" id="sol-4-1" placeholder="Mengambil porsi secukupnya dan pembuatan pupuk kompos" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                                <td class="p-2"><input type="text" id="sol-4-2" placeholder="Mencegah pelepasan gas metana TPA" class="w-full p-2 border rounded" oninput="saveAllProgress()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Proyek Kampanye Lingkungan Kelompok -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center gap-3 border-b border-slate-100 pb-3">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm">F4</span>
+                    <h3 class="text-lg font-bold text-slate-800">Rancangan Proyek Kampanye Lingkungan Kelompok</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">1. Judul Proyek / Kampanye</label>
+                        <input type="text" id="proj-title" placeholder="Contoh: Gerakan 'Green School Zero Plastic 2025'" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl" oninput="saveAllProgress()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">2. Target Sasaran Proyek</label>
+                        <input type="text" id="proj-target" placeholder="Seluruh Siswa, Guru, dan Pengelola Kantin Sekolah" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl" oninput="saveAllProgress()">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">3. Tujuan Utama Aksi Nyata</label>
+                    <textarea id="proj-goal" rows="2" class="w-full p-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl" placeholder="Tuliskan tujuan jangka pendek & panjang..." oninput="saveAllProgress()"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">4. Langkah-Langkah Kerja Utama Proyek:</label>
+                    <div class="space-y-2">
+                        <input type="text" id="proj-step-1" placeholder="Langkah 1: Sosialisasi poster digital di media sosial sekolah" class="w-full p-2 text-xs bg-slate-50 border border-slate-300 rounded-lg" oninput="saveAllProgress()">
+                        <input type="text" id="proj-step-2" placeholder="Langkah 2: Penyediaan tempat sampah pilah organik/anorganik di depan kelas" class="w-full p-2 text-xs bg-slate-50 border border-slate-300 rounded-lg" oninput="saveAllProgress()">
+                        <input type="text" id="proj-step-3" placeholder="Langkah 3: Pemantauan mingguan dan pemberian apresiasi kelas ter-clean" class="w-full p-2 text-xs bg-slate-50 border border-slate-300 rounded-lg" oninput="saveAllProgress()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kesepakatan Iklim & Komitmen Pribadi -->
+            <div class="bg-emerald-950 text-white p-6 rounded-2xl shadow-lg space-y-4">
+                <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-handshake-angle"></i> Komitmen Hijau & Kesepakatan Iklim
+                </h3>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">
+                            Sebutkan perjanjian/kesepakatan internasional yang bertujuan menahan laju pemanasan global di bawah 1,5°C!
+                        </label>
+                        <input type="text" id="p3-agreement" placeholder="Paris Agreement (Perjanjian Paris 2015) & Protokol Kyoto" class="w-full p-2.5 text-xs bg-slate-900 border border-slate-700 rounded-xl text-white" oninput="saveAllProgress()">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">
+                            Deklarasi "Personal Green Commitment" Anggota Kelompok:
+                        </label>
+                        <textarea id="p3-commitment" rows="3" class="w-full p-3 text-xs bg-slate-900 border border-slate-700 rounded-xl text-emerald-300 focus:ring-2 focus:ring-emerald-500" placeholder='"Kami berjanji mulai hari ini akan: 1. Membawa botol minum sendiri, 2. Mematikan sakelar listrik jika tak dipakai, 3. Bersepeda ke sekolah..."' oninput="saveAllProgress()"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 4: RUBRIK EVALUASI GURU -->
+        <!-- ========================================================================= -->
+        <section id="tab-rubrik" class="tab-content hidden space-y-8">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <div>
+                        <span class="px-2.5 py-1 bg-purple-100 text-purple-800 font-bold text-xs rounded-md">Lembar Penilaian Guru</span>
+                        <h2 class="text-xl font-bold text-slate-900 mt-1">Rubrik Evaluasi Sikap & Kinerja Kelompok</h2>
+                    </div>
+                    <button onclick="calculateFinalScore()" class="no-print px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-calculator"></i> Hitung Nilai Akhir
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 text-slate-700 font-bold uppercase">
+                            <tr>
+                                <th class="p-3">No</th>
+                                <th class="p-3">Aspek Penilaian</th>
+                                <th class="p-3 text-center">Skor 1 (Kurang)</th>
+                                <th class="p-3 text-center">Skor 2 (Cukup)</th>
+                                <th class="p-3 text-center">Skor 3 (Baik)</th>
+                                <th class="p-3 text-center">Skor 4 (Sangat Baik)</th>
+                                <th class="p-3 text-center">Skor Terpilih</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 bg-white">
+                            <tr>
+                                <td class="p-3 font-bold">1</td>
+                                <td class="p-3 font-semibold text-slate-800">Kerjasama Kelompok & Keaktifan Diskusi</td>
+                                <td class="p-2 text-center text-slate-500">Pasif dalam diskusi</td>
+                                <td class="p-2 text-center text-slate-500">Cukup aktif jika diminta</td>
+                                <td class="p-2 text-center text-slate-500">Aktif berdiskusi</td>
+                                <td class="p-2 text-center text-slate-500">Sangat aktif & memimpin</td>
+                                <td class="p-2 text-center">
+                                    <select id="score-1" class="p-1 border rounded font-bold text-purple-700" onchange="calculateFinalScore()">
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold">2</td>
+                                <td class="p-3 font-semibold text-slate-800">Analisis Pemecahan Masalah & Data</td>
+                                <td class="p-2 text-center text-slate-500">Kurang relevan</td>
+                                <td class="p-2 text-center text-slate-500">Tepat tapi dangkal</td>
+                                <td class="p-2 text-center text-slate-500">Sistematis & logis</td>
+                                <td class="p-2 text-center text-slate-500">Kritis & berbasis fakta</td>
+                                <td class="p-2 text-center">
+                                    <select id="score-2" class="p-1 border rounded font-bold text-purple-700" onchange="calculateFinalScore()">
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-3 font-bold">3</td>
+                                <td class="p-3 font-semibold text-slate-800">Penyajian Karya & Proyek Kampanye</td>
+                                <td class="p-2 text-center text-slate-500">Tidak siap/kurang rapi</td>
+                                <td class="p-2 text-center text-slate-500">Selesai tapi kurang jelas</td>
+                                <td class="p-2 text-center text-slate-500">Rapi & komunikatif</td>
+                                <td class="p-2 text-center text-slate-500">Inovatif & solutif</td>
+                                <td class="p-2 text-center">
+                                    <select id="score-3" class="p-1 border rounded font-bold text-purple-700" onchange="calculateFinalScore()">
+                                        <option value="4">4</option>
+                                        <option value="3">3</option>
+                                        <option value="2">2</option>
+                                        <option value="1">1</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Final Score Output Box & Teacher Approval -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                    <div class="bg-purple-50 p-5 rounded-2xl border border-purple-200 flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-purple-900 uppercase tracking-wider">Nilai Akhir Peserta Didik</span>
+                            <p class="text-xs text-purple-700 mt-0.5">(Skor Perolehan / 12) × 100</p>
+                        </div>
+                        <div class="text-4xl font-black text-purple-700" id="finalScoreDisplay">100</div>
+                    </div>
+
+                    <div class="flex flex-col justify-end items-end space-y-12 pr-4 pt-4">
+                        <p class="text-xs font-bold text-slate-700">Paraf / Tanda Tangan Guru Pengampu:</p>
+                        <div class="w-48 border-b-2 border-slate-400"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print mt-auto">
+        <p>© 2026 E-LKPD Pemanasan Global • Problem-Based Learning (PBL) Interactive Learning Media</p>
+    </footer>
+
+    <script>
+        // Global state variables
+        let p1ChartInstance = null;
+        let co2ChartInstance = null;
+        let grkValue = 35;
+        let sunIntensity = 70;
+        let simRunning = true;
+        let particles = [];
+        let animationFrameId = null;
+
+        // Initialize on window load
+        window.onload = function() {
+            initMembers();
+            loadSavedProgress();
+            initParticleSimulation();
+            renderP1Chart();
+            renderCO2Chart();
+            calculateCarbon();
+            calculateFinalScore();
+            updateProgressBar();
+        };
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content, #tab-identity').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            if (tabId === 'tab-identity') {
+                document.getElementById('tab-identity').classList.remove('hidden');
+            } else {
+                document.getElementById('tab-identity').classList.remove('hidden'); // keep identity header visible
+                document.getElementById(tabId).classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-emerald-700', 'bg-white', 'shadow-sm');
+                btn.classList.add('text-slate-600');
+            });
+
+            const activeBtn = document.getElementById('nav-' + tabId);
+            if (activeBtn) {
+                activeBtn.classList.add('text-emerald-700', 'bg-white', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-600');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toggle Simulation View Mode (Canvas vs PhET Embed)
+        function toggleSimMode(mode) {
+            const canvasContainer = document.getElementById('sim-container-canvas');
+            const phetContainer = document.getElementById('sim-container-phet');
+            const btnCanvas = document.getElementById('btn-sim-canvas');
+            const btnPhet = document.getElementById('btn-sim-phet');
+
+            if (mode === 'canvas') {
+                canvasContainer.classList.remove('hidden');
+                phetContainer.classList.add('hidden');
+                btnCanvas.className = "px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition shadow-sm flex items-center gap-1.5";
+                btnPhet.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-1.5";
+            } else {
+                canvasContainer.classList.add('hidden');
+                phetContainer.classList.remove('hidden');
+                btnPhet.className = "px-3 py-1.5 rounded-lg bg-emerald-600 text-white transition shadow-sm flex items-center gap-1.5";
+                btnCanvas.className = "px-3 py-1.5 rounded-lg text-slate-300 hover:text-white transition flex items-center gap-1.5";
+            }
+        }
+
+        function initMembers() {
+            const list = document.getElementById('members-list');
+            if (list.children.length === 0) {
+                for (let i = 1; i <= 4; i++) {
+                    addMemberField(i);
+                }
+            }
+        }
+
+        function addMemberField(num) {
+            const list = document.getElementById('members-list');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.id = `member-row-${num}`;
+            div.innerHTML = `
+                <input type="text" id="member-name-${num}" placeholder="Nama Anggota ${num}" class="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500" oninput="saveAllProgress()">
+                <input type="text" id="member-absen-${num}" placeholder="Absen" class="w-16 px-2 py-1.5 text-xs bg-white border border-slate-300 rounded-lg text-center" oninput="saveAllProgress()">
+            `;
+            list.appendChild(div);
+        }
+
+        function addMemberInput() {
+            const count = document.getElementById('members-list').children.length + 1;
+            addMemberField(count);
+        }
+
+        // Canvas Interactive Particle Simulation
+        function initParticleSimulation() {
+            particles = [];
+            const canvas = document.getElementById('greenhouseCanvas');
+            if (!canvas) return;
+            
+            // Adjust canvas resolution dynamically
+            canvas.width = canvas.offsetWidth || 700;
+            canvas.height = canvas.offsetHeight || 260;
+
+            updateSim();
+            requestAnimationFrame(animateParticles);
+        }
+
+        function updateSim() {
+            const grkSlider = document.getElementById('grkSlider');
+            const sunSlider = document.getElementById('sunSlider');
+
+            if (grkSlider) grkValue = parseInt(grkSlider.value);
+            if (sunSlider) sunIntensity = parseInt(sunSlider.value);
+
+            document.getElementById('grkVal').innerText = grkValue + "%";
+            document.getElementById('sunVal').innerText = sunIntensity + "%";
+
+            // Temperature math estimation
+            const baseTemp = 14.0;
+            const extraTemp = (grkValue / 100) * 8.5 + ((sunIntensity - 50) / 100) * 3.0;
+            const totalTemp = Math.max(10.0, baseTemp + extraTemp).toFixed(1);
+
+            document.getElementById('tempDisplay').innerText = totalTemp + " °C";
+
+            const status = document.getElementById('tempStatus');
+            if (totalTemp < 15.5) {
+                status.innerText = "Kondisi Ideal Suhu Atmosfer Bumi";
+                status.className = "text-emerald-400 text-[11px]";
+            } else if (totalTemp < 18.0) {
+                status.innerText = "Peringatan: Pemanasan Global Sedang";
+                status.className = "text-amber-400 text-[11px]";
+            } else {
+                status.innerText = "Bahaya: Efek Rumah Kaca Ekstrem!";
+                status.className = "text-red-400 text-[11px]";
+            }
+        }
+
+        function toggleSimPlay() {
+            simRunning = !simRunning;
+            const btn = document.getElementById('btnPlaySim');
+            const tag = document.getElementById('simStatusTag');
+
+            if (simRunning) {
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> <span>Jeda</span>`;
+                tag.innerText = "Simulasi Berjalan";
+                tag.className = "text-emerald-400 font-medium";
+                requestAnimationFrame(animateParticles);
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> <span>Mulai</span>`;
+                tag.innerText = "Simulasi Dijeda";
+                tag.className = "text-amber-400 font-medium";
+            }
+        }
+
+        function resetSimControls() {
+            document.getElementById('grkSlider').value = 35;
+            document.getElementById('sunSlider').value = 70;
+            particles = [];
+            updateSim();
+        }
+
+        function animateParticles() {
+            const canvas = document.getElementById('greenhouseCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // 1. Draw Atmosphere Layer
+            const atmoTop = 30;
+            const atmoHeight = 40;
+            const grkOpacity = 0.15 + (grkValue / 100) * 0.65;
+            
+            ctx.fillStyle = `rgba(16, 185, 129, ${grkOpacity})`;
+            ctx.fillRect(0, atmoTop, w, atmoHeight);
+            
+            ctx.fillStyle = "#94a3b8";
+            ctx.font = "10px Inter";
+            ctx.fillText("LAPISAN ATMOSFER & GAS RUMAH KACA (CO₂, CH₄)", 12, atmoTop - 8);
+
+            // Draw floating GRK gas dots inside atmosphere
+            const numMolecules = Math.floor((grkValue / 100) * 40);
+            ctx.fillStyle = "rgba(52, 211, 153, 0.8)";
+            for (let i = 0; i < numMolecules; i++) {
+                const mx = (i * 37 + (Date.now() / 50)) % w;
+                const my = atmoTop + ((i * 13) % atmoHeight);
+                ctx.beginPath();
+                ctx.arc(mx, my, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 2. Draw Earth Surface
+            const surfaceY = h - 35;
+            ctx.fillStyle = "#1e3a8a"; // Ocean
+            ctx.fillRect(0, surfaceY, w, 35);
+            ctx.fillStyle = "#15803d"; // Land
+            ctx.fillRect(w * 0.25, surfaceY, w * 0.5, 35);
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px Inter";
+            ctx.fillText("PERMUKAAN BUMI", 12, h - 12);
+
+            // 3. Spawn Solar Sunlight Photons
+            if (simRunning && Math.random() < (sunIntensity / 100) * 0.4) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: atmoTop - 10,
+                    vy: 2.5 + Math.random() * 1.5,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    type: 'sunlight', // Yellow shortwave
+                    bounced: false
+                });
+            }
+
+            // 4. Update and Render Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                // Hit earth surface -> Reflect as Infrared Heat (Red)
+                if (p.type === 'sunlight' && p.y >= surfaceY) {
+                    p.type = 'infrared'; // Longwave heat
+                    p.vy = -(1.8 + Math.random() * 1.0);
+                    p.vx = (Math.random() - 0.5) * 1.2;
+                }
+
+                // Infrared moving back up into atmosphere
+                if (p.type === 'infrared' && p.y <= (atmoTop + atmoHeight) && p.y >= atmoTop && !p.bounced) {
+                    // Probability of getting trapped by GRK
+                    const trapChance = grkValue / 100;
+                    if (Math.random() < trapChance) {
+                        p.vy = -p.vy; // Bounce back down to earth!
+                        p.bounced = true;
+                    }
+                }
+
+                // Render particle dot
+                ctx.beginPath();
+                if (p.type === 'sunlight') {
+                    ctx.fillStyle = "#fbbf24"; // Bright Yellow
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                } else {
+                    ctx.fillStyle = p.bounced ? "#ef4444" : "#f87171"; // Red Heat
+                    ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+                }
+                ctx.fill();
+
+                // Remove out of bounds particles
+                if (p.y < 0 || p.y > h + 10 || p.x < 0 || p.x > w) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            if (simRunning) {
+                animationFrameId = requestAnimationFrame(animateParticles);
+            }
+        }
+
+        // Chart.js - Pertemuan 1 Temperature Chart
+        function renderP1Chart() {
+            const ctx = document.getElementById('p1Chart');
+            if (!ctx) return;
+
+            const timeLabels = ['0m', '3m', '6m', '9m', '12m', '15m'];
+            const dataA = [
+                parseFloat(document.getElementById('tA-0').value) || 0,
+                parseFloat(document.getElementById('tA-3').value) || 0,
+                parseFloat(document.getElementById('tA-6').value) || 0,
+                parseFloat(document.getElementById('tA-9').value) || 0,
+                parseFloat(document.getElementById('tA-12').value) || 0,
+                parseFloat(document.getElementById('tA-15').value) || 0,
+            ];
+
+            const dataB = [
+                parseFloat(document.getElementById('tB-0').value) || 0,
+                parseFloat(document.getElementById('tB-3').value) || 0,
+                parseFloat(document.getElementById('tB-6').value) || 0,
+                parseFloat(document.getElementById('tB-9').value) || 0,
+                parseFloat(document.getElementById('tB-12').value) || 0,
+                parseFloat(document.getElementById('tB-15').value) || 0,
+            ];
+
+            if (p1ChartInstance) {
+                p1ChartInstance.destroy();
+            }
+
+            p1ChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeLabels,
+                    datasets: [
+                        {
+                            label: 'Toples A (Terbuka)',
+                            data: dataA,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Toples B (Tertutup Plastik)',
+                            data: dataB,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { size: 10 } } }
+                    },
+                    scales: {
+                        y: { title: { display: true, text: 'Suhu (°C)', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Chart.js - Historical CO2 Chart
+        function renderCO2Chart() {
+            const ctx = document.getElementById('co2Chart');
+            if (!ctx) return;
+
+            if (co2ChartInstance) co2ChartInstance.destroy();
+
+            co2ChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1880', '1920', '1960', '1990', '2010', '2025'],
+                    datasets: [{
+                        label: 'Konsentrasi CO₂ (ppm)',
+                        data: [290, 300, 315, 350, 390, 422],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', font: { size: 8 } } },
+                        y: { ticks: { color: '#94a3b8', font: { size: 8 } } }
+                    }
+                }
+            });
+        }
+
+        // Carbon Footprint Calculator
+        function calculateCarbon() {
+            const trans = parseFloat(document.getElementById('calcTrans').value) || 0;
+            const acHours = parseFloat(document.getElementById('calcAc').value) || 0;
+            const plastic = parseFloat(document.getElementById('calcPlastic').value) || 0;
+
+            document.getElementById('acValText').innerText = acHours + " Jam/hari";
+            document.getElementById('plasticValText').innerText = plastic + " Kantong/hari";
+
+            // Calculation formula
+            const acEmissions = acHours * 0.25;
+            const plasticEmissions = plastic * 0.15;
+            const total = (trans + acEmissions + plasticEmissions).toFixed(1);
+
+            const display = document.getElementById('carbonScoreDisplay');
+            display.innerHTML = `${total} <span class="text-base font-normal text-slate-500">kg CO₂e/hari</span>`;
+
+            const status = document.getElementById('carbonStatusText');
+            if (total <= 2.5) {
+                status.innerText = "Hebat! Gaya Hidup Sangat Ramah Lingkungan 🌱";
+                status.className = "text-xs text-emerald-700 font-semibold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200";
+            } else if (total <= 4.5) {
+                status.innerText = "Cukup Baik (Sedikit Di Atas Target)";
+                status.className = "text-xs text-amber-700 font-semibold bg-amber-50 px-3 py-1 rounded-full border border-amber-200";
+            } else {
+                status.innerText = "Tinggi! Perlu Langkah Pengurangan Karbon ⚠️";
+                status.className = "text-xs text-red-700 font-semibold bg-red-50 px-3 py-1 rounded-full border border-red-200";
+            }
+        }
+
+        // Calculate Teacher Final Rubric Score
+        function calculateFinalScore() {
+            const s1 = parseInt(document.getElementById('score-1').value) || 0;
+            const s2 = parseInt(document.getElementById('score-2').value) || 0;
+            const s3 = parseInt(document.getElementById('score-3').value) || 0;
+
+            const totalScore = s1 + s2 + s3;
+            const finalScore = Math.round((totalScore / 12) * 100);
+
+            document.getElementById('finalScoreDisplay').innerText = finalScore;
+        }
+
+        // Save and Load Progress
+        function saveAllProgress() {
+            const formData = {};
+            const inputs = document.querySelectorAll('input, textarea, select');
+            
+            inputs.forEach(input => {
+                if (input.id) {
+                    formData[input.id] = input.value;
+                }
+            });
+
+            localStorage.setItem('lkpd_pemanasan_global_data', JSON.stringify(formData));
+            showToast("Progress tersimpan!");
+            updateProgressBar();
+        }
+
+        function loadSavedProgress() {
+            const saved = localStorage.getItem('lkpd_pemanasan_global_data');
+            if (!saved) return;
+
+            try {
+                const formData = JSON.parse(saved);
+                Object.keys(formData).forEach(id => {
+                    const elem = document.getElementById(id);
+                    if (elem) {
+                        elem.value = formData[id];
+                    }
+                });
+            } catch (e) {
+                console.error("Gagal memuat progress tersimpan", e);
+            }
+        }
+
+        function updateProgressBar() {
+            const inputs = document.querySelectorAll('textarea, input[type="text"]');
+            let filled = 0;
+            inputs.forEach(input => {
+                if (input.value.trim() !== '') filled++;
+            });
+
+            const percent = Math.min(100, Math.round((filled / inputs.length) * 100));
+            document.getElementById('overall-progress').style.width = percent + '%';
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
